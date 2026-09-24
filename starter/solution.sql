@@ -1,15 +1,19 @@
-CREATE OR REPLACE FUNCTION log_employee_insert()
-RETURNS TRIGGER AS $$
+CREATE TABLE Employee (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    department VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+CREATE OR REPLACE FUNCTION employee_insert_message()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
 BEGIN
     RAISE NOTICE 'Employee inserted: %', NEW.emp_name;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
-
--- 3. Drop existing trigger if present and create the AFTER INSERT trigger
-DROP TRIGGER IF EXISTS trg_employee_after_insert ON Employee;
-
-CREATE TRIGGER trg_employee_after_insert
+$$;
+CREATE TRIGGER employee_after_insert
 AFTER INSERT ON Employee
 FOR EACH ROW
-EXECUTE FUNCTION log_employee_insert();
+EXECUTE FUNCTION employee_insert_message();
